@@ -1,0 +1,15 @@
+# Node modules
+node_modules/
+
+# Environment files
+.env
+
+# Firebase credentials
+backend/firebase/serviceAccountKey.json
+
+# Logs
+*.log
+
+# System files
+.DS_Store
+Thumbs.db

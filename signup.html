@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sign up for COBUTECH PREMIUM to access exclusive features.">
+    <meta name="keywords" content="COBUTECH, Signup, Register, Premium">
+    <meta name="author" content="COBUTECH">
+    <title>Sign Up - COBUTECH PREMIUM</title>
+    <link rel="stylesheet" href="style.css">
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const passwordField = document.getElementById("password");
+            const confirmPasswordField = document.getElementById("confirm-password");
+            const passwordStrength = document.getElementById("password-strength");
+            const emailField = document.getElementById("email");
+            const emailError = document.getElementById("email-error");
+            const errorMessage = document.getElementById("error-message");
+
+            passwordField.addEventListener("input", () => {
+                const value = passwordField.value;
+                let strength = "Weak";
+                let color = "red";
+
+                if (value.length > 8 && /[A-Z]/.test(value) && /[0-9]/.test(value) && /[@$!%*?&]/.test(value)) {
+                    strength = "Strong";
+                    color = "green";
+                } else if (value.length > 6) {
+                    strength = "Medium";
+                    color = "orange";
+                }
+                passwordStrength.textContent = strength;
+                passwordStrength.style.color = color;
+            });
+
+            confirmPasswordField.addEventListener("input", () => {
+                if (passwordField.value !== confirmPasswordField.value) {
+                    errorMessage.textContent = "Passwords do not match.";
+                    errorMessage.style.display = "block";
+                } else {
+                    errorMessage.style.display = "none";
+                }
+            });
+
+            emailField.addEventListener("blur", async () => {
+                const emailValue = emailField.value;
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+                if (!emailRegex.test(emailValue)) {
+                    emailError.textContent = "Invalid email format.";
+                    emailError.style.display = "block";
+                    return;
+                }
+
+                try {
+                    const response = await fetch('http://localhost:5000/api/check-email', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: emailValue })
+                    });
+
+                    const data = await response.json();
+                    if (!data.available) {
+                        emailError.textContent = "Email already in use. Please log in.";
+                        emailError.style.display = "block";
+                    } else {
+                        emailError.style.display = "none";
+                    }
+                } catch (error) {
+                    console.error('Email check error:', error);
+                }
+            });
+
+            document.getElementById("signup-form").addEventListener("submit", async (event) => {
+                event.preventDefault();
+
+                if (passwordField.value !== confirmPasswordField.value) {
+                    errorMessage.textContent = "Passwords do not match. Please try again.";
+                    errorMessage.style.display = "block";
+                    return;
+                }
+
+                const signupData = {
+                    full_name: document.getElementById("full-name").value.trim(),
+                    email: emailField.value.trim(),
+                    password: passwordField.value.trim(),
+                };
+
+                try {
+                    const response = await fetch('http://localhost:5000/api/signup', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(signupData)
+                    });
+
+                    const data = await response.json();
+                    if (data.success) {
+                        alert('Sign-Up successful! Please check your email for verification.');
+                        sessionStorage.setItem('email', signupData.email); // Store email
+                        window.location.href = "Verification/verification.html";
+                    } else {
+                        errorMessage.textContent = data.message || "Signup failed. Please try again.";
+                        errorMessage.style.display = "block";
+                    }
+                } catch (error) {
+                    console.error('Signup error:', error);
+                    errorMessage.textContent = "An error occurred. Please try again.";
+                    errorMessage.style.display = "block";
+                }
+            });
+        });
+    </script>
+</head>
+
+<body class="signup-bg">
+    <main class="signup-container">
+        <div class="form-wrapper">
+            <h1 id="typing-title">Sign Up</h1>
+            <p>Create your COBUTECH account</p>
+
+            <form id="signup-form">
+                <div class="form-group">
+                    <input type="text" id="full-name" name="full_name" placeholder="Full Name" required>
+                </div>
+
+                <div class="form-group">
+                    <input type="email" id="email" name="email" placeholder="Email" required>
+                    <p id="email-error" class="error-message" style="display: none;"></p>
+                </div>
+
+                <div class="form-group">
+                    <input type="password" id="password" name="password" placeholder="Password" required>
+                    <div id="password-strength" class="password-strength"></div>
+                </div>
+
+                <div class="form-group">
+                    <input type="password" id="confirm-password" name="confirm_password" placeholder="Confirm Password" required>
+                    <p id="error-message" class="error-message" style="display: none;"></p>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="terms" required> I agree to the <a href="terms.html" target="_blank">Terms and Conditions</a>.
+                    </label>
+                </div>
+
+                <button type="submit" class="btn signup-btn">Sign Up</button>
+            </form>
+        </div>
+    </main>
+</body>
+
+</html>

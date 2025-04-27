@@ -1,0 +1,110 @@
+/* General Page Styling */
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    color: white; /* Default text color */
+    text-align: center; /* Center text alignment */
+}
+
+/* Page Background Styling */
+body.index-bg,
+body.contact-support-bg,
+body.signup-bg {
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); /* Default gradient background */
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Specific background for sign-up page */
+body.signup-bg {
+    background: linear-gradient(135deg, #00ffcc, #006600); /* Green gradient background */
+}
+
+/* Header Styling */
+header .logo {
+    position: absolute;
+    top: 20px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ffffff;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+}
+
+/* Sign-Up Container */
+.signup-container {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+}
+
+/* Form Wrapper */
+.form-wrapper {
+    background: linear-gradient(135deg, #002200, #004400); /* Dark green gradient background */
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+/* Heading Styles */
+.form-wrapper h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: white;
+}
+
+.form-wrapper p {
+    font-size: 1rem;
+    color: #cccccc;
+    margin-bottom: 20px;
+}
+
+/* Input Fields */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    background: #f5f5ff; /* Light background for inputs */
+    color: #333;
+}
+
+.form-group input::placeholder {
+    color: #888;
+}
+
+/* Password Strength Indicator */
+.password-strength {
+    font-size: 0.9rem;
+    margin-top: 5px;
+    text-align: left;
+}
+
+/* Buttons */
+.btn {
+    display: block;
+    width: 50%; /* Changed width to 50% for shorter buttons */
+    padding: 7.5px; /* Reduced padding to half */
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    background: linear-gradient(135deg, #7f00ff, #e100ff); /* Purple gradient button */
+    color: white;
+    margin: 10px auto; /* Allow spacing around buttons */
+}
+
+.btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}

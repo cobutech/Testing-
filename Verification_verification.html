@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verification</title>
+    <link rel="stylesheet" href="verification.css">
+</head>
+
+<body>
+    <div class="container">
+        <h2>Enter Your Verification Code</h2>
+        <form id="verification-form">
+            <label for="verificationCode">Verification Code:</label>
+            <input type="text" id="verificationCode" name="verificationCode" required />
+            <button type="submit">Verify Code</button>
+        </form>
+
+        <p id="feedback"></p>
+
+        <button id="regenerate-btn" class="hidden">Regenerate Code</button>
+        <p id="timer" class="hidden"></p>
+
+        <h3>Need Assistance?</h3>
+        <p>If you are having trouble, please contact us at <a href="mailto:support@example.com">support@example.com</a>.</p>
+    </div>
+
+    <script>
+        let attempts = 0;
+        const maxAttempts = 3;
+        const regenTimerDuration = 30; // 30 seconds
+
+        document.getElementById("verification-form").addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const verificationCode = document.getElementById("verificationCode").value;
+            const email = sessionStorage.getItem('email'); // Retrieve stored email
+
+            if (!email) {
+                alert("Session expired. Please sign up or log in again.");
+                window.location.href = "../signup.html";
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:5000/api/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, code: verificationCode })
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    document.getElementById("feedback").innerText = result.message;
+                    alert("Verification successful!");
+                    sessionStorage.setItem('verified', true); // Mark user as verified
+                    window.location.href = "../dashboard.html"; // Redirect on success
+                } else {
+                    document.getElementById("feedback").innerText = result.message;
+                    attempts++;
+                    handleAttempts();
+                }
+            } catch (error) {
+                console.error('Verification error:', error);
+                document.getElementById("feedback").innerText = "An error occurred. Please try again.";
+            }
+        });
+
+        function handleAttempts() {
+            if (attempts >= maxAttempts) {
+                alert("You have reached the maximum attempts. Please regenerate your code.");
+                document.getElementById("regenerate-btn").classList.remove("hidden");
+                startTimer();
+            } else {
+                alert(`Incorrect code entered. You have ${maxAttempts - attempts} attempts left.`);
+            }
+        }
+
+        function startTimer() {
+            let countdown = regenTimerDuration;
+            const timer = document.getElementById("timer");
+
+            timer.classList.remove("hidden");
+            timer.innerText = `You can regenerate your code in ${countdown} seconds.`;
+
+            const interval = setInterval(() => {
+                countdown--;
+                timer.innerText = `You can regenerate your code in ${countdown} seconds.`;
+                if (countdown <= 0) {
+                    clearInterval(interval);
+                    document.getElementById("regenerate-btn").classList.add("hidden");
+                    timer.classList.add("hidden");
+                }
+            }, 1000);
+        }
+
+        document.getElementById("regenerate-btn").addEventListener("click", async () => {
+            const email = sessionStorage.getItem('email');
+            if (!email) {
+                alert("Session expired. Please sign up or log in again.");
+                window.location.href = "../signup.html";
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:5000/api/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+
+                if (response.ok) {
+                    alert("New verification code sent to your email.");
+                    attempts = 0;
+                    document.getElementById("feedback").innerText = '';
+                } else {
+                    const error = await response.json();
+                    alert(error.message);
+                }
+            } catch (error) {
+                console.error('Regeneration error:', error);
+                alert("An error occurred. Please try again.");
+            }
+        });
+    </script>
+</body>
+
+</html>

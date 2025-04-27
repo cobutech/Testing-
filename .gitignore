@@ -13,3 +13,6 @@ backend/firebase/serviceAccountKey.json
 # System files
 .DS_Store
 Thumbs.db
+.env
+firebase-service-account.json
+node_modules/
